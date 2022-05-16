@@ -38,8 +38,12 @@ uniform struct FogInfo{
 uniform sampler2DShadow ShadowMap;
 uniform vec4 Color;
 
+//create noise
 uniform int HasSnow;
+uniform int IsCloud;
 uniform vec3 SnowColor = vec3(1.0, 1.0, 1.0);
+uniform vec4 SkyColor = vec4(0.6f, 0.8f, 1.0f, 1.0f);
+uniform vec4 CloudColor = vec4(1.0);
 
 layout (location = 0) out vec4 FragColor;
 
@@ -156,6 +160,10 @@ subroutine(RenderPassType) void shadeWithShadow() {
         //if(noise.a > 0.6) newColor = CloudColor;
     }
 
+    //create cloud colours
+    noise = texture(NoiseTex, TexCoord);
+    float t = (cos(noise.a * PI) +1.0) /2.0;
+    vec4 skyMixColor = mix(SkyColor, CloudColor, t);
 
     //project shadow map
     float shadow = 1.0;
@@ -164,11 +172,18 @@ subroutine(RenderPassType) void shadeWithShadow() {
     }
 
     //If fragment is in the shadow use ambient only
-    vec3 mixedColor = mix(fogInfo.Color, diffAndSpec * shadow + ambient + newColor, fogFactor); //Mix the colours with the fog colours
+    vec3 mixedColor = mix(fogInfo.Color, diffAndSpec * shadow + newColor + ambient, fogFactor); //Mix the colours with the fog colours
     FragColor = vec4(mixedColor, 1.0);
 
     //gamma correct
     FragColor = pow(FragColor, vec4(1.0/2.2));
+
+    //if is a cloud
+    if(IsCloud == 1){
+        //mixedColor = mix(fogInfo.Color, skyMixColor.rgb, fogFactor);
+        //FragColor = vec4(mixedColor, 1.0);
+        FragColor = vec4(skyMixColor.rgb, 1.0);
+    }
 }
 
 subroutine (RenderPassType) void recordDepth(){

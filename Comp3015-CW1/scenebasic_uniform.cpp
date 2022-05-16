@@ -18,7 +18,7 @@ using glm::mat4;
 
 #include <sstream>
 
-SceneBasic_Uniform::SceneBasic_Uniform() : ground(50.0f, 50.0f, 1, 1), clouds(50.0f, 50.0f, 1, 1), hills(50, 10, 20, 10), angle(0.0f), tPrev(0.0f), rotSpeed(glm::pi<float>() / 8.0f), shadowMapWidth(512), shadowMapHeight(512) {
+SceneBasic_Uniform::SceneBasic_Uniform() : ground(50.0f, 50.0f, 1, 1), clouds(100.0f, 100.0f, 4, 4), hills(50, 10, 20, 10), angle(0.0f), tPrev(0.0f), rotSpeed(glm::pi<float>() / 8.0f), shadowMapWidth(512), shadowMapHeight(512) {
 	TexBody1 = Texture::loadTexture("media/textures/CarBodyTexture.png");
 	TexBody2 = Texture::loadTexture("media/textures/CarBodyTexture2.png");
 	gTex = Texture::loadTexture("media/textures/Grass.png");
@@ -111,7 +111,7 @@ void SceneBasic_Uniform::initScene() {
 	//set up noise and quad for clouds
 	prog.setUniform("NoiseTex", 2);
 	glActiveTexture(GL_TEXTURE2);
-	noiseTex = NoiseTex::generate2DTex(6.0f);
+	noiseTex = NoiseTex::generate2DTex(10.0f);
 }
 
 void SceneBasic_Uniform::compile() {
@@ -257,6 +257,7 @@ void SceneBasic_Uniform::drawScene() {
 	prog.setUniform("material.Shininess", 100.0f);			//Set material "Shininess" 
 
 	prog.setUniform("HasSnow", 0);
+	prog.setUniform("IsCloud", 0);
 
 	model = mat4(1.0f);
 	model = glm::scale(model, vec3(2.0f, 2.0f, 2.0f));
@@ -418,7 +419,8 @@ void SceneBasic_Uniform::drawScene() {
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, noiseTex);
 
-	prog.setUniform("HasSnow", 1);
+	prog.setUniform("HasSnow", 0);
+	prog.setUniform("IsCloud", 1);
 
 	model = mat4(1.0f);
 	model = glm::translate(model, vec3(0.0f, 8.0f, 0.0f));
