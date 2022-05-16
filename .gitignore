@@ -28,3 +28,7 @@
 # Executables
 *.out
 *.app
+
+x64/debug/
+.vs/Comp3015-CW2/v16/ipch/
+*.sdf
