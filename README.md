@@ -44,11 +44,11 @@ There are many important files and classes in the project, however the key ones 
         * The perspective's camera position
         * Set light's position to that of the Frustum to make sure shadows look right
         * Create shadow map projection
-    *In drawScene:
+    * In drawScene:
         * The objects to use to apply to the object
         * The texture index to apply to the object
         * If the given object should be snowy or considered the sky
-    *In setMatrices:
+    * In setMatrices:
         * The mv matrix
         * The Normal Matrix
         * The MVP
