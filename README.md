@@ -1,5 +1,6 @@
 # 2022-comp3015-CW2
 2022 comp3015, 3D Object and Lighting Demo in OpenGL
+
 Repo: https://github.com/jwrsandilands/Comp3015-CW2
 
 ### Before you Read
@@ -72,5 +73,4 @@ There a select few things to note about the program that are important:
 Originally, the intention of the project was to create something in a more cartoon style, with cell-shading and multiple lights, however the further I built the project, the more I came to like the more realistic approach with shadow projections and Perlin noise. This is also why I use the Perlin noise for both the clouds and on the ground as snow, as I felt the effect created looked good and fit the new direction.
 
 ### Youtube Video
-
-https://youtu.be/ZkZAF6Nq7X4
+https://youtu.be/ExLjcpPLrG4
