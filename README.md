@@ -1,5 +1,6 @@
 # 2022-comp3015-CW2
 2022 comp3015, 3D Object and Lighting Demo in OpenGL
+Repo: https://github.com/jwrsandilands/Comp3015-CW2
 
 ### Before you Read
 
