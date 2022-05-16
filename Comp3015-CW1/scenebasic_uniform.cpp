@@ -159,7 +159,7 @@ void SceneBasic_Uniform::update(float t) {
 }
 
 void SceneBasic_Uniform::render() {
-
+	glActiveTexture(GL_TEXTURE0);
 	prog.use();
 	//Pass1 (shadow map generation)
 	view = lightFrustum.getViewMatrix();
@@ -188,6 +188,7 @@ void SceneBasic_Uniform::render() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, width, height);
 	glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &pass2Index);
+	glActiveTexture(GL_TEXTURE3);
 	drawScene();
 
 	////draw light frustum wireframe to test its shape
@@ -221,6 +222,7 @@ void SceneBasic_Uniform::setupFBO() {
 	//the depth buffer texture
 	GLuint depthTex;
 	glGenTextures(1, &depthTex);
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, depthTex);
 	glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH_COMPONENT24, shadowMapWidth, shadowMapHeight); //create texture of width and height
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); //shadow map processing
@@ -251,13 +253,13 @@ void SceneBasic_Uniform::setupFBO() {
 		printf("framebuffer is incomplete.\n");
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 1);
 }
 
 
 void SceneBasic_Uniform::drawScene() {
 	//set car1 properties and position
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, TexBody1);
 
 	//prog.setUniform("material.Kd", 0.9f, 0.9f, 0.9f);		//Set material colour (light reflectivity)
@@ -277,7 +279,7 @@ void SceneBasic_Uniform::drawScene() {
 
 	//car 1 tyres
 	{
-		glActiveTexture(GL_TEXTURE1);
+		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, wheelTex);
 
 		//wheel 1
@@ -326,7 +328,7 @@ void SceneBasic_Uniform::drawScene() {
 	}
 
 
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, TexBody2);
 
 	////set car2 properties and position
@@ -344,7 +346,7 @@ void SceneBasic_Uniform::drawScene() {
 
 	//car 2 tyres
 	{
-		glActiveTexture(GL_TEXTURE1);
+		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, wheelTex);
 
 		//wheel 1
@@ -396,7 +398,7 @@ void SceneBasic_Uniform::drawScene() {
 		wheel24->render();
 	}
 
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, bumperTex);
 	
 	//set obstacles appearance
@@ -477,7 +479,7 @@ void SceneBasic_Uniform::drawScene() {
 	hills.render();
 
 	////set clouds properties and position
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, noiseTex);
 
 	prog.setUniform("HasSnow", 0);

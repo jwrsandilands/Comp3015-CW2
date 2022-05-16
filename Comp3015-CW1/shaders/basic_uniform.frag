@@ -35,7 +35,7 @@ uniform struct FogInfo{
     vec3 Color;     //Colour of the Fog
 }fogInfo;
 
-uniform sampler2DShadow ShadowMap;
+layout (binding = 0) uniform sampler2DShadow ShadowMap;
 uniform vec4 Color;
 
 //create noise
@@ -47,7 +47,7 @@ uniform vec4 CloudColor = vec4(1.0);
 
 layout (location = 0) out vec4 FragColor;
 
-layout (binding = 1) uniform sampler2D Tex1;
+layout (binding = 3) uniform sampler2D Tex1;
 layout (binding = 2) uniform sampler2D NoiseTex;
 
 
