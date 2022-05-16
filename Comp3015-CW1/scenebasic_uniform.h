@@ -13,6 +13,8 @@
 
 #include "helper/frustum.h"
 
+#include "helper/noisetex.h"
+
 class SceneBasic_Uniform : public Scene
 {
 private:
@@ -20,11 +22,12 @@ private:
     GLSLProgram prog, solidProg;
     
     //gluints
-    GLuint shadowFBO, pass1Index, pass2Index;
+    GLuint shadowFBO, pass1Index, pass2Index, noiseTex;
 
     //meshes that need to be included
-    Plane ground;
+    Plane ground, clouds;
     Torus hills;
+    glm::vec3 lightPos; //position of light for clouds
     float angle, tPrev, rotSpeed; //also camera rotation variables
 
     //numbers for shadowmap

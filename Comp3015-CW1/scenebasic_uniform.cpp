@@ -18,7 +18,7 @@ using glm::mat4;
 
 #include <sstream>
 
-SceneBasic_Uniform::SceneBasic_Uniform() : ground(50.0f, 50.0f, 1, 1), hills(50, 10, 20, 10), angle(0.0f), tPrev(0.0f), rotSpeed(glm::pi<float>() / 8.0f), shadowMapWidth(512), shadowMapHeight(512) {
+SceneBasic_Uniform::SceneBasic_Uniform() : ground(50.0f, 50.0f, 1, 1), clouds(50.0f, 50.0f, 1, 1), hills(50, 10, 20, 10), angle(0.0f), tPrev(0.0f), rotSpeed(glm::pi<float>() / 8.0f), shadowMapWidth(512), shadowMapHeight(512) {
 	TexBody1 = Texture::loadTexture("media/textures/CarBodyTexture.png");
 	TexBody2 = Texture::loadTexture("media/textures/CarBodyTexture2.png");
 	gTex = Texture::loadTexture("media/textures/Grass.png");
@@ -107,6 +107,11 @@ void SceneBasic_Uniform::initScene() {
 	prog.setUniform("fogInfo.MaxDist", 40.0f);
 	prog.setUniform("fogInfo.MinDist", 10.0f);
 	prog.setUniform("fogInfo.Color", vec3(0.7f, 0.9f, 1.0f));
+
+	//set up noise and quad for clouds
+	prog.setUniform("NoiseTex", 2);
+	glActiveTexture(GL_TEXTURE2);
+	noiseTex = NoiseTex::generate2DTex(6.0f);
 }
 
 void SceneBasic_Uniform::compile() {
@@ -176,12 +181,12 @@ void SceneBasic_Uniform::render() {
 	glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &pass2Index);
 	drawScene();
 
-	//draw light frustum
-	solidProg.use();
-	solidProg.setUniform("Color", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	mat4 mv = view * lightFrustum.getInverseViewMatrix();
-	solidProg.setUniform("MVP", projection * mv);
-	lightFrustum.render();
+	////draw light frustum wireframe to test its shape
+	//solidProg.use();
+	//solidProg.setUniform("Color", glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	//mat4 mv = view * lightFrustum.getInverseViewMatrix();
+	//solidProg.setUniform("MVP", projection * mv);
+	//lightFrustum.render();
 }
 
 void SceneBasic_Uniform::resize(int w, int h) {
@@ -250,6 +255,8 @@ void SceneBasic_Uniform::drawScene() {
 	prog.setUniform("material.Ks", 0.95f, 0.95f, 0.95f);	//Set Material Specularity (does it get highlights?)
 	//prog.setUniform("material.Ka", 0.1f, 0.1f, 0.1f);		//Set Material Ambience (How much ambint light does it reflect?)
 	prog.setUniform("material.Shininess", 100.0f);			//Set material "Shininess" 
+
+	prog.setUniform("HasSnow", 0);
 
 	model = mat4(1.0f);
 	model = glm::scale(model, vec3(2.0f, 2.0f, 2.0f));
@@ -387,6 +394,8 @@ void SceneBasic_Uniform::drawScene() {
 	prog.setUniform("material.Ks", 0.2f, 0.2f, 0.2f);	//Set Material Specularity (does it get highlights?)
 	//prog.setUniform("material.Ka", 0.1f, 0.1f, 0.1f);		//Set Material Ambience (How much ambint light does it reflect?)
 	prog.setUniform("material.Shininess", 20.0f);			//Set material "Shininess" 
+	prog.setUniform("HasSnow", 1);
+
 
 	model = mat4(1.0f);
 	model = glm::translate(model, vec3(0.0f, -0.2f, 0.0f));
@@ -398,12 +407,24 @@ void SceneBasic_Uniform::drawScene() {
 	prog.setUniform("material.Ks", 0.2f, 0.2f, 0.2f);	//Set Material Specularity (does it get highlights?)
 	//prog.setUniform("material.Ka", 0.1f, 0.1f, 0.1f);		//Set Material Ambience (How much ambint light does it reflect?)
 	prog.setUniform("material.Shininess", 20.0f);			//Set material "Shininess" 
+	prog.setUniform("HasSnow", 1);
 
 	model = mat4(1.0f);
 	model = glm::rotate(model, glm::radians(90.0f), vec3(1.0f, 0.0f, 0.0f));
 	setMatrices();
 	hills.render();
 
+	////set clouds properties and position
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, noiseTex);
+
+	prog.setUniform("HasSnow", 1);
+
+	model = mat4(1.0f);
+	model = glm::translate(model, vec3(0.0f, 8.0f, 0.0f));
+	setMatrices();
+
+	clouds.render();
 }
 
 void SceneBasic_Uniform::spitOutDepthBuffer() {

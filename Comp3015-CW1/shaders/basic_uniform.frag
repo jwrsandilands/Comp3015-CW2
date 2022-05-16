@@ -1,5 +1,7 @@
 #version 460
 
+#define PI 3.14159265
+
 in vec4 Position;
 in vec3 Normal;
 in vec2 TexCoord;
@@ -33,15 +35,17 @@ uniform struct FogInfo{
     vec3 Color;     //Colour of the Fog
 }fogInfo;
 
-//uniform mat4 ModelViewMatrix;
-//uniform mat3 NormalMatrix;
-//uniform mat4 MVP;
 uniform sampler2DShadow ShadowMap;
+uniform vec4 Color;
+
+uniform int HasSnow;
+uniform vec3 SnowColor = vec3(1.0, 1.0, 1.0);
 
 layout (location = 0) out vec4 FragColor;
 
 layout (binding = 1) uniform sampler2D Tex1;
-//layout (binding = 1) uniform sampler2D Tex2;
+layout (binding = 2) uniform sampler2D NoiseTex;
+
 
 vec3 blinnPhongModel(int light, vec4 position, vec3 normal){
 
@@ -94,6 +98,7 @@ vec3 BlinnPhongModelDiffAndSpec(int light, vec4 position, vec3 normal){
     //calculate colours
     vec3 texColor = texture(Tex1, TexCoord).rgb; //get the colour of any given point of a texture
 
+
     //calculate the diffuse here
     vec4 pos = position;                                        //transform vertex position (mesh size) from model coords to view coords
     vec3 s = normalize(vec3(lights[light].Position - pos));     //calculate the direction from which the light strikes the mesh (already in view coords)
@@ -101,6 +106,7 @@ vec3 BlinnPhongModelDiffAndSpec(int light, vec4 position, vec3 normal){
     float sDotN = max(dot(s,n), 0.0);                           //calculate dot product for s (light projection direction) and n (direction of a face)
     vec3 diffuse = texColor * sDotN;                            //calculate light reflections/intensity bouncing off the material using the diffuse lighting calculation
     //vec3 diffuse = texColor * floor(sDotN * levels) * scaleFactor;
+
 
     //calculate specular here
     vec3 specular = vec3(0.0);
@@ -139,6 +145,16 @@ subroutine(RenderPassType) void shadeWithShadow() {
         diffAndSpec += BlinnPhongModelDiffAndSpec(i, Position, normalize(Normal));
     }
 
+    //create noise for snow
+    vec4 noise = texture(NoiseTex, TexCoord);
+
+    vec3 newColor = material.Kd;
+
+    if(HasSnow == 1){
+        newColor = material.Kd;
+        if(noise.a > 0.55) newColor = SnowColor;
+        //if(noise.a > 0.6) newColor = CloudColor;
+    }
 
 
     //project shadow map
@@ -148,13 +164,11 @@ subroutine(RenderPassType) void shadeWithShadow() {
     }
 
     //If fragment is in the shadow use ambient only
-    vec3 color = mix(fogInfo.Color, diffAndSpec * shadow + ambient, fogFactor); //Mix the colours with the fog colours
-    FragColor = vec4(color, 1.0);
+    vec3 mixedColor = mix(fogInfo.Color, diffAndSpec * shadow + ambient + newColor, fogFactor); //Mix the colours with the fog colours
+    FragColor = vec4(mixedColor, 1.0);
 
     //gamma correct
     FragColor = pow(FragColor, vec4(1.0/2.2));
-
-
 }
 
 subroutine (RenderPassType) void recordDepth(){
