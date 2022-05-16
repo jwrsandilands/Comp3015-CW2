@@ -24,6 +24,9 @@ SceneBasic_Uniform::SceneBasic_Uniform() : ground(50.0f, 50.0f, 1, 1), clouds(10
 	gTex = Texture::loadTexture("media/textures/Grass.png");
 	wheelTex = Texture::loadTexture("media/textures/CarWheelTexture.png");
 
+	bumperTex = Texture::loadTexture("media/textures/BumperTexture.png");
+	rampTex = Texture::loadTexture("media/textures/RampTexture.png");
+
 
 	carBody = ObjMesh::load("media/models/CarBody1.obj", false, true);
 	carBody2 = ObjMesh::load("media/models/CarBody1.obj", false, true);
@@ -35,6 +38,12 @@ SceneBasic_Uniform::SceneBasic_Uniform() : ground(50.0f, 50.0f, 1, 1), clouds(10
 	wheel22 = ObjMesh::load("media/models/CarTyre.obj", false, true);
 	wheel23 = ObjMesh::load("media/models/CarTyre.obj", false, true);
 	wheel24 = ObjMesh::load("media/models/CarTyre.obj", false, true);
+
+	Bumper1 = ObjMesh::load("media/models/RCRBumper.obj", false, true);
+	Bumper2 = ObjMesh::load("media/models/RCRBumper.obj", false, true);
+
+	Ramp1 = ObjMesh::load("media/models/RCR Ramp.obj", false, true);
+	Ramp2 = ObjMesh::load("media/models/RCR Ramp.obj", false, true);
 }
 
 void SceneBasic_Uniform::initScene() {
@@ -108,7 +117,7 @@ void SceneBasic_Uniform::initScene() {
 	prog.setUniform("fogInfo.MinDist", 10.0f);
 	prog.setUniform("fogInfo.Color", vec3(0.7f, 0.9f, 1.0f));
 
-	//set up noise and quad for clouds
+	//set up noise for cloud/snow
 	prog.setUniform("NoiseTex", 2);
 	glActiveTexture(GL_TEXTURE2);
 	noiseTex = NoiseTex::generate2DTex(10.0f);
@@ -388,8 +397,60 @@ void SceneBasic_Uniform::drawScene() {
 	}
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, gTex);
+	glBindTexture(GL_TEXTURE_2D, bumperTex);
+	
+	//set obstacles appearance
+	//Bumper1
+	prog.setUniform("material.Ks", 0.95f, 0.95f, 0.95f);	//Set Material Specularity (does it get highlights?)
+	prog.setUniform("material.Shininess", 100.0f);			//Set material "Shininess" 
 
+	model = mat4(1.0f);
+	model = glm::scale(model, vec3(0.5f, 0.5f, 0.5f));
+	//model = glm::rotate(model, glm::radians(-160.0f), vec3(0.0f, 1.0f, 0.0f));
+	model = glm::translate(model, vec3(1.0f, -0.5f, -3.0f));
+	setMatrices();
+
+	Bumper1->render();
+
+
+	//Bumper2
+	prog.setUniform("material.Ks", 0.95f, 0.95f, 0.95f);	//Set Material Specularity (does it get highlights?)
+	prog.setUniform("material.Shininess", 100.0f);			//Set material "Shininess" 
+
+	model = mat4(1.0f);
+	model = glm::scale(model, vec3(0.5f, 0.5f, 0.5f));
+	model = glm::rotate(model, glm::radians(-180.0f), vec3(0.0f, 1.0f, 0.0f));
+	model = glm::translate(model, vec3(2.0f, -0.5f, -3.0f));
+	setMatrices();
+
+	Bumper2->render();
+
+	glBindTexture(GL_TEXTURE_2D, gTex);
+	//Ramp1
+	prog.setUniform("material.Ks", 0.95f, 0.95f, 0.95f);	//Set Material Specularity (does it get highlights?)
+	prog.setUniform("material.Shininess", 100.0f);			//Set material "Shininess" 
+
+	model = mat4(1.0f);
+	model = glm::scale(model, vec3(3.0f, 3.0f, 3.0f));
+	model = glm::rotate(model, glm::radians(-180.0f), vec3(0.0f, 1.0f, 0.0f));
+	model = glm::translate(model, vec3(-1.0f, -0.1f, -1.0f));
+	setMatrices();
+
+	Ramp1->render();
+
+	//Ramp2
+	prog.setUniform("material.Ks", 0.95f, 0.95f, 0.95f);	//Set Material Specularity (does it get highlights?)
+	prog.setUniform("material.Shininess", 100.0f);			//Set material "Shininess" 
+
+	model = mat4(1.0f);
+	model = glm::scale(model, vec3(3.0f, 3.0f, 3.0f));
+	//model = glm::rotate(model, glm::radians(-180.0f), vec3(0.0f, 1.0f, 0.0f));
+	model = glm::translate(model, vec3(-1.0f, -0.1f, -1.0f));
+	setMatrices();
+
+	Ramp1->render();
+
+	glBindTexture(GL_TEXTURE_2D, gTex);
 	////set ground properties and position
 	//prog.setUniform("material.Kd", 0.9f, 0.9f, 0.9f);		//Set material colour (light reflectivity)
 	prog.setUniform("material.Ks", 0.2f, 0.2f, 0.2f);	//Set Material Specularity (does it get highlights?)

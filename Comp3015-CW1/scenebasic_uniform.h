@@ -49,11 +49,19 @@ private:
     std::unique_ptr<ObjMesh> wheel23;
     std::unique_ptr<ObjMesh> wheel24;
 
+    std::unique_ptr<ObjMesh> Bumper1;
+    std::unique_ptr<ObjMesh> Bumper2;
+
+    std::unique_ptr<ObjMesh> Ramp1;
+    std::unique_ptr<ObjMesh> Ramp2;
+
     //textures to be used
     GLuint TexBody1;
     GLuint TexBody2;
     GLuint gTex;
     GLuint wheelTex;
+    GLuint bumperTex;
+    GLuint rampTex;
 
     //methods
     void setMatrices();
