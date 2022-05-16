@@ -29,6 +29,6 @@
 *.out
 *.app
 
-x64/debug/
+x64/Debug/
 .vs/Comp3015-CW2/v16/ipch/
 *.sdf
